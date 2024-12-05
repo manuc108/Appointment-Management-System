@@ -1,6 +1,11 @@
+import os
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 Base = declarative_base()
 
@@ -13,10 +18,10 @@ class Appointment(Base):
     appointment_date = Column(DateTime, nullable=False)
     is_canceled = Column(Boolean, default=False)
 
-# Database setup
-DATABASE_URL = "sqlite:///./appointments.db"
+# Database setup 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create tables
+# Create tables in the database
 Base.metadata.create_all(bind=engine)
+

@@ -39,10 +39,6 @@ coverage.xml
 # PyCharm files
 .idea/
 
-# Heroku specific
-Procfile
-runtime.txt
-
 # System specific
 *.bak
 *.swp

@@ -1,4 +1,5 @@
 import os
+from fastapi.responses import FileResponse
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -10,9 +11,14 @@ from appointment_db import Appointment, SessionLocal
 
 app = FastAPI()
 
-@app.get("/")
+
+@app.api_route("/", methods=["GET", "HEAD"])
 async def read_root():
     return {"message": "Welcome to the Appointment Management System"}
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("favicon.ico")
 
 # Dependency for DB session
 def get_db():

@@ -1,8 +1,8 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import List
-
 from pydantic import BaseModel
 
 # Import database setup from appointment_db
@@ -13,7 +13,6 @@ app = FastAPI()
 @app.get("/")
 async def read_root():
     return {"message": "Welcome to the Appointment Management System"}
-
 
 # Dependency for DB session
 def get_db():
@@ -38,8 +37,7 @@ class AppointmentResponse(BaseModel):
     is_canceled: bool
 
     class Config:
-        from_attributes = True
-
+        orm_mode = True
 
 # Endpoint to create an appointment
 @app.post("/appointments/", response_model=AppointmentResponse)
@@ -47,8 +45,10 @@ def create_appointment(appointment: AppointmentCreate, db: Session = Depends(get
     # Check for double-booking
     existing_appointment = (
         db.query(Appointment)
-        .filter(Appointment.dentist_name == appointment.dentist_name)
-        .filter(Appointment.appointment_date == appointment.appointment_date)
+        .filter(
+            Appointment.dentist_name == appointment.dentist_name,
+            Appointment.appointment_date == appointment.appointment_date,
+        )
         .first()
     )
     if existing_appointment:
@@ -60,7 +60,7 @@ def create_appointment(appointment: AppointmentCreate, db: Session = Depends(get
     db.refresh(new_appointment)
     return new_appointment
 
-
+# Endpoint to list appointments
 @app.get("/appointments/", response_model=List[AppointmentResponse])
 def list_appointments(date: datetime = None, dentist_name: str = None, db: Session = Depends(get_db)):
     query = db.query(Appointment)
@@ -70,14 +70,22 @@ def list_appointments(date: datetime = None, dentist_name: str = None, db: Sessi
         query = query.filter(Appointment.dentist_name == dentist_name)
     return query.all()
 
-
+# Endpoint to cancel an appointment
 @app.delete("/appointments/{appointment_id}", response_model=AppointmentResponse)
 def cancel_appointment(appointment_id: int, db: Session = Depends(get_db)):
     appointment = db.query(Appointment).filter(Appointment.id == appointment_id).first()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
-    
+
     appointment.is_canceled = True
     db.commit()
     db.refresh(appointment)
     return appointment
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    host = "0.0.0.0"
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("appointment_api:app", host=host, port=port)

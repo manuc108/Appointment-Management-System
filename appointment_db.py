@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL not found in .env file")
+
 Base = declarative_base()
 
 # Appointment model
@@ -18,10 +21,10 @@ class Appointment(Base):
     appointment_date = Column(DateTime, nullable=False)
     is_canceled = Column(Boolean, default=False)
 
-# Database setup 
+# Database setup
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create tabels
+# Create tables
 Base.metadata.create_all(bind=engine)
 

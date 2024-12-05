@@ -14,7 +14,7 @@ class Appointment(Base):
     is_canceled = Column(Boolean, default=False)
 
 # Database setup
-DATABASE_URL = "sqlite:///./appointments.db"
+DATABASE_URL = "postgresql://root:P@$$w@rd18@localhost:5432/appointments_db"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

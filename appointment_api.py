@@ -86,6 +86,5 @@ def cancel_appointment(appointment_id: int, db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
 
-    host = "0.0.0.0"
     port = int(os.getenv("PORT", 8000))
-    uvicorn.run("appointment_api:app", host=host, port=port)
+    uvicorn.run("appointment_api:app", host="0.0.0.0", port=port)

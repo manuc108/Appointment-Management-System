@@ -38,7 +38,7 @@ class AppointmentResponse(BaseModel):
     is_canceled: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Endpoint to create an appointment
